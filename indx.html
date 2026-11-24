@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aloqa paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f0ff; --ink:#1b1536; --mute:#6b6488; --card:rgba(255,255,255,.62); --line:rgba(27,21,54,.12);
+  --a:#7b5cff; --b:#ff8a5c; --c:#22c9a0; --field:rgba(255,255,255,.7); --shadow:0 30px 80px -30px rgba(70,40,160,.35);
+  color-scheme:light;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#140f2b; --ink:#f2eeff; --mute:#a69fc4; --card:rgba(34,26,68,.6); --line:rgba(255,255,255,.12);
+    --a:#9d86ff; --b:#ff9d76; --c:#4ce3bb; --field:rgba(255,255,255,.06); --shadow:0 30px 80px -30px rgba(0,0,0,.7);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#140f2b; --ink:#f2eeff; --mute:#a69fc4; --card:rgba(34,26,68,.6); --line:rgba(255,255,255,.12);
+  --a:#9d86ff; --b:#ff9d76; --c:#4ce3bb; --field:rgba(255,255,255,.06); --shadow:0 30px 80px -30px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;overflow-x:hidden;transition:background .5s,color .5s}
+.blob{position:fixed;border-radius:50%;filter:blur(80px);opacity:.55;pointer-events:none;z-index:0}
+.b1{width:46vmax;height:46vmax;background:var(--a);top:-18vmax;left:-12vmax;animation:drift 22s ease-in-out infinite alternate}
+.b2{width:38vmax;height:38vmax;background:var(--b);bottom:-16vmax;right:-10vmax;animation:drift 26s ease-in-out infinite alternate-reverse}
+.b3{width:24vmax;height:24vmax;background:var(--c);top:40%;left:45%;opacity:.3;animation:drift 30s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(8vmax,6vmax) scale(1.15)}}
+.glow{position:fixed;width:420px;height:420px;border-radius:50%;pointer-events:none;z-index:1;
+  background:radial-gradient(circle,color-mix(in srgb,var(--a) 35%,transparent),transparent 65%);
+  transform:translate(-50%,-50%);left:50%;top:50%;transition:opacity .4s}
+.theme{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));right:16px;z-index:5;width:44px;height:44px;border-radius:50%;
+  border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;backdrop-filter:blur(14px);font-size:18px;transition:transform .4s}
+.theme:hover{transform:rotate(30deg) scale(1.08)}
+.wrap{position:relative;z-index:2;max-width:1120px;margin:0 auto;padding:72px 24px 56px;display:grid;grid-template-columns:1fr 1.05fr;gap:48px;align-items:center;min-height:100vh}
+h1{font-size:clamp(2.6rem,6vw,4.8rem);line-height:.98;font-weight:800;letter-spacing:-.035em}
+h1 span{display:inline-block;background:linear-gradient(100deg,var(--a),var(--b),var(--c),var(--a));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 8s linear infinite}
+@keyframes flow{to{background-position:-300% 0}}
+.lead{margin:22px 0 34px;color:var(--mute);font-size:1.1rem;line-height:1.55;max-width:34ch}
+.channels{display:grid;gap:10px;max-width:420px}
+.ch{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:18px;border:1px solid var(--line);background:var(--card);backdrop-filter:blur(14px);
+  color:var(--ink);font:inherit;text-align:left;cursor:pointer;position:relative;overflow:hidden;transition:transform .35s cubic-bezier(.2,.9,.3,1.3),border-color .3s,box-shadow .3s}
+.ch:hover{transform:translateX(8px)}
+.ch[aria-selected="true"]{border-color:var(--a);box-shadow:0 12px 34px -14px var(--a);transform:translateX(14px)}
+.ch .ic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--field);flex:none;transition:background .3s,color .3s}
+.ch[aria-selected="true"] .ic{background:var(--a);color:#fff}
+.ch svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ch b{display:block;font-weight:600}
+.ch small{color:var(--mute);font-size:.82rem}
+.ch .dot{margin-left:auto;width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 0 0 var(--c);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.card{position:relative;border-radius:30px;padding:30px;border:1px solid var(--line);background:var(--card);backdrop-filter:blur(22px);box-shadow:var(--shadow);
+  transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform;animation:rise .9s cubic-bezier(.2,.9,.3,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(40px) scale(.96)}}
+.detail{display:flex;align-items:center;gap:14px;padding:16px;border-radius:18px;background:var(--field);border:1px solid var(--line);margin-bottom:24px}
+.detail .v{flex:1;min-width:0}
+.detail small{color:var(--mute);display:block;font-size:.8rem}
+.detail strong{font-size:1.08rem;font-weight:600;overflow-wrap:anywhere;display:block}
+.detail .swap{animation:swap .45s cubic-bezier(.2,.9,.3,1)}
+@keyframes swap{from{opacity:0;transform:translateY(10px)}}
+.copy{border:0;border-radius:12px;padding:10px 14px;background:var(--ink);color:var(--bg);font:inherit;font-weight:600;font-size:.88rem;cursor:pointer;transition:transform .2s}
+.copy:hover{transform:scale(1.06)}.copy:active{transform:scale(.94)}
+h2{font-size:1.35rem;font-weight:800;letter-spacing:-.02em;margin-bottom:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{border:1px solid var(--line);background:var(--field);color:var(--ink);font:inherit;font-size:.9rem;padding:8px 15px;border-radius:99px;cursor:pointer;transition:all .3s cubic-bezier(.2,.9,.3,1.4)}
+.chip:hover{transform:translateY(-2px)}
+.chip[aria-pressed="true"]{background:var(--a);border-color:var(--a);color:#fff;transform:scale(1.06)}
+.field{position:relative;margin-bottom:14px}
+.field input,.field textarea{width:100%;padding:22px 16px 8px;border-radius:16px;border:1px solid var(--line);background:var(--field);color:var(--ink);font:inherit;font-size:1rem;outline:none;resize:none;transition:border-color .3s,box-shadow .3s}
+.field label{position:absolute;left:16px;top:16px;color:var(--mute);pointer-events:none;transition:all .25s;transform-origin:left}
+.field input:focus,.field textarea:focus{border-color:var(--a);box-shadow:0 0 0 4px color-mix(in srgb,var(--a) 22%,transparent)}
+.field input:focus+label,.field input:not(:placeholder-shown)+label,.field textarea:focus+label,.field textarea:not(:placeholder-shown)+label{top:7px;transform:scale(.78);color:var(--a)}
+.field.err input,.field.err textarea{border-color:#ff5c7a;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.count{position:absolute;right:14px;bottom:10px;font-size:.75rem;color:var(--mute)}
+.send{width:100%;border:0;border-radius:18px;padding:17px;font:inherit;font-weight:700;font-size:1.05rem;color:#fff;cursor:pointer;position:relative;overflow:hidden;
+  background:linear-gradient(100deg,var(--a),var(--b));transition:transform .15s ease-out,box-shadow .3s;box-shadow:0 16px 34px -14px var(--a)}
+.send:hover{box-shadow:0 22px 44px -14px var(--a)}
+.send .rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(4);opacity:0}}
+.send[disabled]{opacity:.8;cursor:progress}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;vertical-align:-2px;margin-right:8px}
+@keyframes rot{to{transform:rotate(360deg)}}
+.done{position:absolute;inset:0;border-radius:30px;background:var(--card);backdrop-filter:blur(26px);display:grid;place-content:center;justify-items:center;gap:12px;text-align:center;padding:30px;
+  opacity:0;pointer-events:none;transition:opacity .5s}
+.done.on{opacity:1;pointer-events:auto}
+.done svg{width:96px;height:96px}
+.done circle{fill:none;stroke:var(--c);stroke-width:4;stroke-dasharray:283;stroke-dashoffset:283}
+.done path{fill:none;stroke:var(--c);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60}
+.done.on circle{animation:draw .7s .1s ease-out forwards}
+.done.on path{animation:draw .4s .7s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.done p{color:var(--mute);max-width:28ch}
+.again{margin-top:6px;border:1px solid var(--line);background:var(--field);color:var(--ink);font:inherit;padding:10px 18px;border-radius:99px;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:9;background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:99px;font-weight:600;transition:all .4s cubic-bezier(.2,.9,.3,1.3);pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+@media (max-width:860px){.wrap{grid-template-columns:1fr;padding-top:80px;gap:36px}.ch:hover,.ch[aria-selected="true"]{transform:none}.glow{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.done.on circle,.done.on path{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div class="glow" id="glow"></div>
+<button class="theme" id="theme" aria-label="Mavzuni almashtirish">◐</button>
+
+<main class="wrap">
+  <section>
+    <h1>Keling, <span>gaplashamiz</span></h1>
+    <p class="lead">Loyihangiz yoki savolingiz bormi? Qulay usulni tanlang, odatda bir soat ichida javob beramiz.</p>
+    <div class="channels" role="tablist" id="channels"></div>
+  </section>
+
+  <section class="card" id="card">
+    <div class="detail">
+      <div class="v swap" id="dv"><small id="dl"></small><strong id="dt"></strong></div>
+      <button class="copy" id="copy">Nusxalash</button>
+    </div>
+    <h2>Xabar qoldiring</h2>
+    <div class="chips" id="chips">
+      <button class="chip" aria-pressed="true">Loyiha</button>
+      <button class="chip" aria-pressed="false">Hamkorlik</button>
+      <button class="chip" aria-pressed="false">Savol</button>
+    </div>
+    <form id="form" novalidate onsubmit="return false">
+      <div class="field"><input id="name" placeholder=" " autocomplete="name"><label for="name">Ismingiz</label></div>
+      <div class="field"><input id="contact" placeholder=" " autocomplete="email"><label for="contact">Email yoki telefon</label></div>
+      <div class="field"><textarea id="msg" rows="4" maxlength="300" placeholder=" "></textarea><label for="msg">Xabaringiz</label><span class="count" id="count">0/300</span></div>
+      <button class="send" id="send" type="button">Xabarni yuborish</button>
+    </form>
+    <div class="done" id="done" aria-live="polite">
+      <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/><path d="M30 52l13 13 27-30"/></svg>
+      <h2>Yuborildi</h2>
+      <p id="doneText">Xabaringiz qabul qilindi. Tez orada javob beramiz.</p>
+      <button class="again" id="again">Yana yozish</button>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast">Nusxalandi</div>
+
+<script>
+var $=function(i){return document.getElementById(i)};
+var icons={
+  tg:'<svg viewBox="0 0 24 24"><path d="M21 4L3 11l6 2.5L11 20l3-4.5 5 3.5z"/><path d="M9 13.5L21 4"/></svg>',
+  mail:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7l8.5 6 8.5-6"/></svg>',
+  tel:'<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg>',
+  map:'<svg viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 10-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>'
+};
+var chans=[
+  {k:"tg",t:"Telegram",s:"Eng tez javob",l:"Telegram",v:"@aloqa_jamoasi",live:true},
+  {k:"mail",t:"Email",s:"Batafsil murojaatlar uchun",l:"Elektron pochta",v:"salom@misol.uz"},
+  {k:"tel",t:"Telefon",s:"Du–Ju, 9:00–18:00",l:"Telefon raqami",v:"+998 71 200 00 00"},
+  {k:"map",t:"Ofis",s:"Toshkent shahri",l:"Manzil",v:"Amir Temur koʻchasi 1, Toshkent"}
+];
+var cur=0, box=$("channels");
+chans.forEach(function(c,i){
+  var b=document.createElement("button");
+  b.className="ch";b.setAttribute("role","tab");b.setAttribute("aria-selected",i==0);
+  b.innerHTML='<span class="ic">'+icons[c.k]+'</span><span><b>'+c.t+'</b><small>'+c.s+'</small></span>'+(c.live?'<span class="dot" title="Hozir onlayn"></span>':'');
+  b.onclick=function(){pick(i)};
+  box.appendChild(b);
+});
+function pick(i){
+  cur=i;
+  [].forEach.call(box.children,function(el,j){el.setAttribute("aria-selected",j==i)});
+  var dv=$("dv");dv.classList.remove("swap");void dv.offsetWidth;dv.classList.add("swap");
+  $("dl").textContent=chans[i].l;$("dt").textContent=chans[i].v;
+}
+pick(0);
+
+function toast(t){var el=$("toast");el.textContent=t;el.classList.add("on");clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove("on")},1800)}
+$("copy").onclick=function(){
+  var v=chans[cur].v;
+  try{navigator.clipboard.writeText(v).then(function(){toast("Nusxalandi")},function(){toast("Nusxalab boʻlmadi")})}catch(e){toast("Nusxalab boʻlmadi")}
+};
+
+[].forEach.call($("chips").children,function(c){
+  c.onclick=function(){[].forEach.call($("chips").children,function(x){x.setAttribute("aria-pressed",x===c)})};
+});
+$("msg").oninput=function(){$("count").textContent=this.value.length+"/300"};
+
+var card=$("card"),glow=$("glow");
+var fine=matchMedia("(hover:hover) and (pointer:fine)").matches && !matchMedia("(prefers-reduced-motion:reduce)").matches;
+if(fine){
+  document.addEventListener("pointermove",function(e){glow.style.left=e.clientX+"px";glow.style.top=e.clientY+"px"});
+  card.addEventListener("pointermove",function(e){
+    var r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform="perspective(1100px) rotateY("+(x*6)+"deg) rotateX("+(-y*6)+"deg)";
+  });
+  card.addEventListener("pointerleave",function(){card.style.transform=""});
+  var s=$("send");
+  s.addEventListener("pointermove",function(e){
+    var r=s.getBoundingClientRect();
+    s.style.transform="translate("+((e.clientX-r.left-r.width/2)*.05)+"px,"+((e.clientY-r.top-r.height/2)*.25)+"px)";
+  });
+  s.addEventListener("pointerleave",function(){s.style.transform=""});
+}
+
+$("send").addEventListener("click",function(e){
+  var b=this,r=b.getBoundingClientRect(),d=document.createElement("span");
+  d.className="rip";d.style.width=d.style.height="60px";
+  d.style.left=(e.clientX-r.left-30)+"px";d.style.top=(e.clientY-r.top-30)+"px";
+  b.appendChild(d);setTimeout(function(){d.remove()},600);
+  var ok=true;
+  ["name","contact","msg"].forEach(function(id){
+    var f=$(id).parentNode,bad=!$(id).value.trim();
+    f.classList.remove("err");
+    if(bad){void f.offsetWidth;f.classList.add("err");if(ok)$(id).focus();ok=false}
+  });
+  if(!ok){toast("Barcha maydonlarni toʻldiring");return}
+  b.disabled=true;b.innerHTML='<span class="spin"></span>Yuborilmoqda…';
+  setTimeout(function(){
+    $("doneText").textContent=$("name").value.trim()+", xabaringiz qabul qilindi. Tez orada javob beramiz.";
+    $("done").classList.add("on");
+    b.disabled=false;b.textContent="Xabarni yuborish";
+  },1400);
+});
+$("again").onclick=function(){
+  $("done").classList.remove("on");
+  ["name","contact","msg"].forEach(function(id){$(id).value=""});
+  $("count").textContent="0/300";
+};
+
+$("theme").onclick=function(){
+  var root=document.documentElement,dark=matchMedia("(prefers-color-scheme:dark)").matches;
+  var now=root.getAttribute("data-theme")||(dark?"dark":"light");
+  root.setAttribute("data-theme",now==="dark"?"light":"dark");
+};
+</script>
+</body>
+</html>
